@@ -1,0 +1,24 @@
+.edit-content{
+  & .edit-main-content{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    & .el-tabs__header{
+      flex-shrink: 0;
+      & .el-tabs__nav-wrap{
+          margin-bottom: 0px;
+      }
+    }
+    & .el-tabs__content{
+      flex-grow: 1;
+      position: relative;
+      &>[role='tabpanel']{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+      }
+    }
+  }
+}
