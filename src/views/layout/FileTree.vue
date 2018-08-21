@@ -17,7 +17,7 @@
         <div class="group-children">
           <div v-for="(child, ins) in item.children"
             :key="ins"
-            @click="checkFile(ins, child.path)"
+            @click="checkFile(child)"
             class="tree-item"
             :class="child.path === activeFile ? 'is-checked' : ''">
             <div class="el-icon-tickets"></div>
@@ -30,60 +30,46 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'FileTree',
   data () {
-    return {
-      fileTree: [
-        {
-          path: 'root/Example',
-          extend: true,
-          title: 'Example',
-          children: [
-            {
-              path: 'root/Example/token.js',
-              title: 'token.js'
-            }
-          ]
-        },
-        {
-          path: 'root/Unititled',
-          extend: false,
-          title: 'Unititled',
-          children: [
-            {
-              path: 'root/Unititled/token.js',
-              title: 'token.js'
-            },
-            {
-              path: 'root/Unititled/test.js',
-              title: 'test.js'
-            }
-          ]
-        },
-        {
-          path: 'root/智能合约',
-          extend: false,
-          title: '智能合约',
-          children: [
-            {
-              path: 'root/智能合约/token.js',
-              title: 'token.js'
-            }
-          ]
-        }
-      ],
-      activeFile: 'root/Example/token.js'
-    }
+    return {}
+  },
+  computed: {
+    ...mapGetters([
+      'activeFile',
+      'fileTree'
+    ])
   },
   methods: {
     switchGroup (index, path) {
-      this.$set(this.fileTree[index], 'extend', !this.fileTree[index].extend)
+      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      editorState.tree[index].extend = !editorState.tree[index].extend
+      this.$store.dispatch('setEditorState', editorState).then((res) => {})
     },
-    checkFile (index, path) {
-      this.activeFile = path
+    checkFile (item) {
+      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      editorState.activeFile = item.path
+      if (!this.checkPathExit(item.path, editorState.files)) {
+        editorState.files.push(item)
+      }
+      this.$store.dispatch('setEditorState', editorState).then((res) => {})
+    },
+    checkPathExit (path, arr) {
+      var result = false
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].path === path) {
+          result = true
+          break
+        }
+      }
+      return result
     }
-  }
+  },
+  mounted () {},
+  created () {},
+  destroyed () {}
 }
 </script>
 

@@ -1,14 +1,16 @@
 <template>
   <div class="edit-content">
-    <el-tabs class="edit-main-content" v-model="editTabsValue" type="card" closable @tab-remove="removeTab">
+    <el-tabs class="edit-main-content" :value="activeFile" @input="checkTab" type="card" closable @tab-remove="removeTab">
       <el-tab-pane
-        v-for="(item) in editTabs"
-        :key="item.name"
+        v-for="(item, index) in fileTab"
+        :key="index"
         :label="item.title"
-        :name="item.name"
+        :name="item.path"
       >
         <editor ref="aceEditor"
-          v-model="item.content"
+          :value="item.content"
+          @input="editing(item.path, index)"
+          :path="item.path"
           @init="editorInit"
           lang="javascript"
           theme="solarized_dark"
@@ -28,7 +30,7 @@
 
 <script>
 import Console from './Console'
-// import editor from 'vue2-ace-editor-support-chinese'
+import { mapGetters } from 'vuex'
 import editor from 'vue2-ace-editor'
 export default {
   name: 'Edit',
@@ -55,10 +57,18 @@ export default {
         showPrintMargin: false,
         fontSize: 14
       }
+      // fileTab: this.$store.state.editor.editorState.files
     }
   },
   mounted () {
     console.log(this.$refs.aceEditor[0].editor)
+  },
+  created () {},
+  computed: {
+    ...mapGetters([
+      'activeFile',
+      'fileTab'
+    ])
   },
   methods: {
     setCompletions (editor, session, pos, prefix, callback) {
@@ -90,6 +100,23 @@ export default {
       this.editTabsValue = activeName
       this.editTabs = tabs.filter(tab => tab.name !== targetName)
     },
+    checkTab (path) {
+      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      editorState.activeFile = path
+      this.$store.dispatch('setEditorState', editorState).then((res) => {})
+    },
+    editing (path, index) {
+      this.$nextTick(() => {
+        var content = this.$refs.aceEditor[index].contentBackup
+        var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+        for (var i = 0; i < editorState.files.length; i++) {
+          if (editorState.files[i].path === path) {
+            editorState.files[i].content = content
+          }
+        }
+        this.$store.dispatch('setEditorState', editorState).then((res) => {})
+      })
+    },
     editorInit: function (editor) {
       require('brace/ext/language_tools')
       require('brace/mode/html')
@@ -97,6 +124,16 @@ export default {
       require('brace/theme/solarized_dark')
       require('brace/snippets/javascript')
       require('brace/snippets/autohotkey')
+    }
+  },
+  watch: {
+    tabIndex: {
+      handler: function (newValue, oldValue) {
+        var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+        editorState.files = JSON.parse(JSON.stringify(newValue))
+        this.$store.dispatch('setEditorState', editorState).then((res) => {})
+      },
+      deep: true
     }
   }
 }
