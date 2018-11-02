@@ -5,78 +5,39 @@
 </template>
 
 <script>
+import { getList } from './api/index.js'
+import { mapGetters } from 'vuex'
 export default {
   name: 'App',
   mounted () {},
+  computed: {
+    ...mapGetters([
+      'editorState'
+    ])
+  },
   created () {
     var editorState = window.localStorage.getItem('editorState')
     if (!editorState) {
+      editorState = JSON.parse(JSON.stringify(this.editorState))
       // 此处请求并获取初始化的editorState
-      editorState = {
-        'files': [
+      getList().then((res) => {
+        editorState.files = [
           {
-            path: 'root/Example/token.js',
-            title: 'token.js',
-            content: ''
-          },
-          {
-            path: 'root/Unititled/token.js',
-            title: 'token.js',
-            content: ''
+            path: 'root/Example/' + res.result[0].title + '.js',
+            title: res.result[0].title + '.js',
+            content: res.result[0].content
           }
-        ],
-        'tree': [
-          {
-            path: 'root/Example',
-            extend: true,
-            title: 'Example',
-            children: [
-              {
-                path: 'root/Example/token.js',
-                title: 'token.js',
-                content: ''
-              }
-            ]
-          },
-          {
-            path: 'root/Unititled',
-            extend: false,
-            title: 'Unititled',
-            children: [
-              {
-                path: 'root/Unititled/token.js',
-                title: 'token.js',
-                content: ''
-              },
-              {
-                path: 'root/Unititled/test.js',
-                title: 'test.js',
-                content: ''
-              }
-            ]
-          },
-          {
-            path: 'root/智能合约',
-            extend: false,
-            title: '智能合约',
-            children: [
-              {
-                path: 'root/智能合约/token.js',
-                title: 'token.js',
-                content: ''
-              }
-            ]
-          }
-        ],
-        'activeFile': 'root/Example/token.js',
-        'dialog': {
-          'dialogType': '',
-          'visible': false,
-          'actionType': ''
-        },
-        'sessions': {}
-      }
-      this.$store.dispatch('setEditorState', editorState).then((res) => {})
+        ]
+        for (var i = 0; i < res.result.length; i++) {
+          editorState.tree[0].children.push({
+            path: 'root/Example/' + res.result[i].title + '.js',
+            title: res.result[i].title + '.js',
+            content: res.result[i].content
+          })
+        }
+        editorState.activeFile = 'root/Example/' + res.result[0].title + '.js'
+        this.$store.dispatch('setEditorState', editorState).then((res) => {})
+      })
     } else {
       this.$store.dispatch('setEditorState', JSON.parse(editorState)).then((res) => {})
     }

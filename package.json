@@ -15,8 +15,13 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bignumber.js": "^7.2.1",
+    "bumo-sdk": "^2.1.0",
+    "chai": "^4.1.2",
+    "co-wrap-all": "^1.0.0",
     "element-ui": "^2.4.2",
     "mavon-editor": "^2.6.9",
+    "moment": "^2.22.2",
     "vue": "^2.5.2",
     "vue-canvas-nest": "^0.1.1",
     "vue-emoji-component": "^0.0.7",

@@ -3,11 +3,14 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import './assets/iconfont/iconfont.css'
 import App from './App'
 import store from './store'
 import router from './router'
+import VueContextMenu from './components/VueContextMenu/index.js'
 import './assets/css/reset.css'
 import './assets/css/element-reset.css'
+Vue.use(VueContextMenu)
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 /* eslint-disable no-new */

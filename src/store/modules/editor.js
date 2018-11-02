@@ -1,6 +1,30 @@
 const editor = {
   state: {
-    editorState: null
+    editorState: {
+      'files': [
+        {
+          path: '',
+          title: '',
+          content: ''
+        }
+      ],
+      'tree': [
+        {
+          path: 'root/Example',
+          extend: true,
+          title: 'Example',
+          children: []
+        },
+        {
+          path: 'root/Customize',
+          extend: false,
+          title: 'Customize',
+          children: []
+        }
+      ],
+      'activeFile': 'root/Example',
+      'sessions': {}
+    }
   },
   mutations: {
     SET_EDITER_STATE: (state, data) => {
@@ -13,18 +37,6 @@ const editor = {
         commit('SET_EDITER_STATE', data)
         window.localStorage.setItem('editorState', JSON.stringify(data))
         resolve(state.editorState)
-      })
-    },
-    delVisitedViews ({ commit, state }, view) {
-      return new Promise(resolve => {
-        commit('DEL_VISITED_VIEWS', view)
-        resolve([...state.visitedViews])
-      })
-    },
-    delOthersViews ({ commit, state }, view) {
-      return new Promise(resolve => {
-        commit('DEL_OTHERS_VIEWS', view)
-        resolve([...state.visitedViews])
       })
     }
   }
