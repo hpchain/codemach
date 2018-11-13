@@ -75,7 +75,8 @@ export default {
       'fileTab',
       'environment',
       'environmentType',
-      'activeEnvironment'
+      'activeEnvironment',
+      'editorState'
     ])
   },
   methods: {
@@ -98,7 +99,7 @@ export default {
       this.$store.dispatch('setEnvironment', environment).then((res) => {})
     },
     removeTab (targetName) {
-      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      var editorState = JSON.parse(JSON.stringify(this.editorState))
       if (editorState.activeFile === targetName) {
         for (var i = 0; i < editorState.files.length; i++) {
           if (editorState.files[i].path === targetName) {
@@ -110,7 +111,7 @@ export default {
       this.$store.dispatch('setEditorState', editorState).then((res) => {})
     },
     checkTab (path) {
-      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      var editorState = JSON.parse(JSON.stringify(this.editorState))
       editorState.activeFile = path
       this.$store.dispatch('setEditorState', editorState).then((res) => {})
     },
@@ -118,7 +119,7 @@ export default {
       this.$nextTick(() => {
         // this.$refs.aceEditor[index].editor.find('test')
         var content = this.$refs.aceEditor[index].contentBackup
-        var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+        var editorState = JSON.parse(JSON.stringify(this.editorState))
         for (var i = 0; i < editorState.files.length; i++) {
           if (editorState.files[i].path === path) {
             editorState.files[i].content = content
@@ -164,7 +165,7 @@ export default {
   watch: {
     tabIndex: {
       handler: function (newValue, oldValue) {
-        var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+        var editorState = JSON.parse(JSON.stringify(this.editorState))
         editorState.files = JSON.parse(JSON.stringify(newValue))
         this.$store.dispatch('setEditorState', editorState).then((res) => {})
       },

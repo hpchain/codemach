@@ -55,7 +55,7 @@ hash: 交易hash
 }
 */
 export function getAddress (params) {
-  console.log(params)
+  // console.log(params)
   return sdk.contract.getAddress(params.type, params.hash)
 }
 
@@ -68,7 +68,7 @@ contractCode: 合约代码
 }
 */
 export function createContract (params) {
-  console.log(params)
+  // console.log(params)
   return sdk.contract.release(params)
 }
 /*
@@ -82,7 +82,7 @@ input: 合约参数，字符串类型 (非必填项)
 }
 */
 export function debugForMain (params) {
-  console.log(params)
+  // console.log(params)
   return sdk.contract.debugForMain(params)
 }
 /*
@@ -94,6 +94,6 @@ contractAdress: 合约地址
 }
 */
 export function debugForQuery (params) {
-  console.log(params)
+  // console.log(params)
   return sdk.contract.debugForQuery(params)
 }

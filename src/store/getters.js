@@ -12,6 +12,42 @@ const getters = {
   },
   environmentType: state => state.environment.environmentType,
   environment: state => state.environment.data,
-  activeEnvironment: state => state.environment.data[state.environment.environmentType]
+  activeEnvironment: state => state.environment.data[state.environment.environmentType],
+  activeFileInitData: state => {
+    var result = ''
+    for (var x = 0; x < state.editor.editorState.tree.length; x++) {
+      for (var y = 0; y < state.editor.editorState.tree[x].children.length; y++) {
+        if (state.editor.editorState.tree[x].children[y].path === state.editor.editorState.activeFile) {
+          result = state.editor.editorState.tree[x].children[y].invokeData.init
+          break
+        }
+      }
+    }
+    return result
+  },
+  activeFileQueryData: state => {
+    var result = ''
+    for (var x = 0; x < state.editor.editorState.tree.length; x++) {
+      for (var y = 0; y < state.editor.editorState.tree[x].children.length; y++) {
+        if (state.editor.editorState.tree[x].children[y].path === state.editor.editorState.activeFile) {
+          result = state.editor.editorState.tree[x].children[y].invokeData.query
+          break
+        }
+      }
+    }
+    return result
+  },
+  activeFileMainData: state => {
+    var result = ''
+    for (var x = 0; x < state.editor.editorState.tree.length; x++) {
+      for (var y = 0; y < state.editor.editorState.tree[x].children.length; y++) {
+        if (state.editor.editorState.tree[x].children[y].path === state.editor.editorState.activeFile) {
+          result = state.editor.editorState.tree[x].children[y].invokeData.main
+          break
+        }
+      }
+    }
+    return result
+  }
 }
 export default getters

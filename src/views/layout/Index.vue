@@ -4,7 +4,7 @@
     <div class="main-content">
       <FileTree></FileTree>
       <Edit></Edit>
-      <Opt :pubIng="pubIng" @publish="publish"></Opt>
+      <Opt :pubIng="pubIng" @publish="publish" @refreshAccountBalance="refreshAccountBalance" :refreshAccountBalanceIng="refreshAccountBalanceIng"></Opt>
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@ import moment from 'moment'
 import FileTree from './FileTree'
 import Edit from './Edit'
 import Opt from './Opt'
-// import codeBeautify from '../../tools/codeBeautify.js'
+import codeConfig from '../../axios/codeConfig.js'
 import { mapGetters } from 'vuex'
 import { createAccount, getBalance, recharge, createContract, moToBu } from '../../api/index.js'
 export default {
@@ -23,7 +23,8 @@ export default {
   components: {Opt, Edit, FileTree, Header},
   data () {
     return {
-      pubIng: false
+      pubIng: false,
+      refreshAccountBalanceIng: false
     }
   },
   computed: {
@@ -32,7 +33,8 @@ export default {
       'activeEnvironment',
       'environment',
       'editorState',
-      'activeContent'
+      'activeContent',
+      'activeFileInitData'
     ])
   },
   created () {
@@ -50,7 +52,7 @@ export default {
           type: 'sandbox',
           address: acc.address
         }).then((res) => {
-          if (res.errorCode === 0) {
+          if (res.errorCode === codeConfig.SUCCESS_CODE) {
             environment.sandbox.opt.editor.balance = moToBu(res.result.balance)
             this.$store.dispatch('setEnvironment', environment).then((res) => {})
           }
@@ -65,21 +67,38 @@ export default {
           environment.sandbox.opt.editor.address = acc.address
           this.$store.dispatch('setEnvironment', environment).then((res) => {})
           recharge(params).then((res) => {
-            if (res.errorCode === 0) {
+            if (res.errorCode === codeConfig.SUCCESS_CODE) {
               window.localStorage.setItem('sanboxAccount', JSON.stringify(acc))
               setTimeout(() => {
-                getBalance(params).then((innerRes) => {
-                  if (innerRes.errorCode === 0) {
-                    var environment = JSON.parse(JSON.stringify(this.environment))
-                    environment.sandbox.opt.editor.balance = moToBu(innerRes.result.balance)
-                    this.$store.dispatch('setEnvironment', environment).then((res) => {})
-                  }
-                })
-              }, 10000)
+                this.refreshAccountBalance(params)
+              }, 1000)
             }
           })
         })
       }
+    },
+    refreshAccountBalance (params) {
+      if (this.refreshAccountBalanceIng) {
+        return false
+      }
+      this.refreshAccountBalanceIng = true
+      getBalance(params).then((banlaceRes) => {
+        // console.log(banlaceRes)
+        if (banlaceRes.errorCode === codeConfig.SUCCESS_CODE) {
+          try {
+            this.refreshAccountBalanceIng = false
+            let environment = JSON.parse(JSON.stringify(this.environment))
+            environment[this.environmentType].opt.editor.balance = moToBu(banlaceRes.result.balance)
+            this.$store.dispatch('setEnvironment', environment).then((res) => {})
+          } catch (e) {
+            this.refreshAccountBalanceIng = false
+            this.refreshAccountBalance(params)
+          }
+        } else {
+          this.refreshAccountBalanceIng = false
+          this.refreshAccountBalance(params)
+        }
+      })
     },
     publish () {
       var fileList = JSON.parse(JSON.stringify(this.editorState.files))
@@ -90,43 +109,39 @@ export default {
       if (this.pubIng) {
         return false
       }
-      if (this.environmentType === 'sandbox') { // sandbox，直接发布
+      if (this.environmentType === 'sandbox') { // sandbox
         var acc = JSON.parse(window.localStorage.getItem('sanboxAccount'))
         var params = {
           type: 'sandbox',
           privateKey: acc.privateKey,
           contractCode: this.activeContent
         }
-        if (this.activeEnvironment.opt.issueInitData) {
-          params.input = this.activeEnvironment.opt.issueInitData
+        if (this.activeFileInitData) {
+          params.input = this.activeFileInitData
         }
         this.$store.commit('SET_ENVIRONMENT_ISSUERESULT', {type: this.environmentType, value: ''})
         this.$store.commit('SET_ENVIRONMENT_CONTRACTINFO', {type: this.environmentType, address: '--', hash: '--'})
         this.pubIng = true
         createContract(params).then((res) => {
           this.pubIng = false
-          if (res.errorCode === 0) {
-            // console.log(res)
+          // console.log(res)
+          if (res.errorCode === codeConfig.SUCCESS_CODE) {
             let environment = JSON.parse(JSON.stringify(this.environment))
             environment.sandbox.opt.issueResult = 'success'
             environment.sandbox.opt.contractInfo.hash = res.result.hash
             environment.sandbox.opt.contractInfo.address = res.result.contractAddressList[0].contract_address
-            environment.sandbox.console.data.push({
-              status: 'success',
-              result: this.formatResult(res.result),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
+            environment.sandbox.console.data.push(this.formatDeployConsoleInfo('finished', res.result))
             this.$store.dispatch('setEnvironment', environment).then((resEnvironment) => {})
-          } else if (res.errorCode === -1) {
-            this.$message.error('The BU required for the deploy is insufficient, the system will recharge BU automatically for you, please try again later')
+          } else if (res.errorCode === codeConfig.NOT_ENOUGH_BANLANCE) {
+            this.$message.error({
+              type: 'error',
+              message: 'The BU required for the deploy is insufficient, the system will recharge BU automatically for you, you can refresh the balance to checking  status',
+              onClose: () => {}
+            })
           } else {
             let environment = JSON.parse(JSON.stringify(this.environment))
             environment.sandbox.opt.issueResult = 'failed'
-            environment.sandbox.console.data.push({
-              status: 'failed',
-              result: this.formatResult(res.errorDesc),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
+            environment.sandbox.console.data.push(this.formatDeployConsoleInfo('failed', res.errorDesc))
             this.$store.dispatch('setEnvironment', environment).then((res) => {})
           }
           setTimeout(() => {
@@ -135,7 +150,7 @@ export default {
               address: this.environment.sandbox.opt.editor.address
             }).then((banlaceRes) => {
               // console.log(banlaceRes)
-              if (banlaceRes.errorCode === 0) {
+              if (banlaceRes.errorCode === codeConfig.SUCCESS_CODE) {
                 let environment = JSON.parse(JSON.stringify(this.environment))
                 environment.sandbox.opt.editor.balance = moToBu(banlaceRes.result.balance)
                 this.$store.dispatch('setEnvironment', environment).then((res) => {})
@@ -165,6 +180,58 @@ export default {
         })
         return result
       }
+    },
+    formatDeployConsoleInfo (status, res) {
+      var result = {
+        time: moment().format('YYYY-MM-DD HH:mm:ss'),
+        action: 'Deploy',
+        status: status,
+        raw: this.formatResult(res),
+        printInfoList: [],
+        showRaw: false
+      }
+      if (status === 'finished') { // deploy contract for success
+        for (let i = 0; i < res.contractAddressList.length; i++) {
+          result.printInfoList.push({
+            title: 'Contract address',
+            dec: res.contractAddressList[i].contract_address
+          })
+        }
+        result.printInfoList.push({
+          title: 'Tx hash',
+          dec: res.hash
+        })
+      } else if (status === 'failed') { // deploy contract for failed
+        try {
+          let basement = JSON.parse(res)
+          if (basement.constructor === Array) {
+            for (let i = 0; i < basement.length; i++) {
+              let rowStr = basement[i].line ? (' at row ' + basement[i].line) : ''
+              let colStr = basement[i].column ? (' and column ' + basement[i].column) : ''
+              result.printInfoList.push({
+                title: 'Error',
+                dec: basement[i].message + rowStr + colStr
+              })
+            }
+          } else if (basement.hasOwnProperty('exception')) {
+            result.printInfoList.push({
+              title: 'Exception',
+              dec: basement.exception
+            })
+          } else {
+            result.printInfoList.push({
+              title: 'Error',
+              dec: res
+            })
+          }
+        } catch (e) {
+          result.printInfoList.push({
+            title: 'Error',
+            dec: res
+          })
+        }
+      }
+      return result
     },
     switchEnvironment (value) {
       this.$store.commit('SET_ENVIRONMENT_TYPE', value)

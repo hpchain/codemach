@@ -66,7 +66,8 @@ export default {
   computed: {
     ...mapGetters([
       'activeFile',
-      'fileTree'
+      'fileTree',
+      'editorState'
     ])
   },
   methods: {
@@ -144,7 +145,12 @@ export default {
         var file = {
           title: value + '.js',
           path: editorState.tree[index].path + '/' + value + '.js',
-          content: baseContent
+          content: baseContent,
+          invokeData: {
+            init: '',
+            main: '',
+            query: ''
+          }
         }
         editorState.files.push(file)
         editorState.tree[index].children.splice(0, 0, file)

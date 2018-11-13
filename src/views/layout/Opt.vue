@@ -5,14 +5,22 @@
         <h3 class="opt-box-title">Account</h3>
         <div class="opt-box-cont">
           <p>{{activeEnvironment.opt.editor.address}}</p>
-          <p>{{activeEnvironment.opt.editor.balance}} BU</p>
+          <p>{{activeEnvironment.opt.editor.balance}} BU
+            <i @click="refreshAccountBalance" :class="refreshAccountBalanceIng ? 'refresh-ing' : ''" class="fr el-icon-refresh"></i>
+          </p>
         </div>
       </div>
       <div class="opt-box issue-contract">
         <h3 class="opt-box-title">Deploy the contract</h3>
         <div class="opt-box-cont">
           <p>The init function argument (optional)</p>
-          <el-input type="textarea" :value="activeEnvironment.opt.issueInitData" :autosize="true" resize="none" @input="changeIssueData"></el-input>
+          <el-input
+          type="textarea"
+          :value="activeFileInitData"
+          :autosize="true"
+          resize="none"
+          @input="changeIssueData">
+          </el-input>
           <el-button class="opt-box-btn" @click="publish()" size="small" type="primary"><i v-if="pubIng" class="el-icon-loading"></i>Deploy</el-button>
           <div class="issue-result-cont">
             <div v-if="activeEnvironment.opt.issueResult !== ''" class="result-item" :class="activeEnvironment.opt.issueResult">
@@ -29,7 +37,7 @@
           <div class="msg-info">{{activeEnvironment.opt.contractInfo.address}}</div>
         </div>
         <div class="msg-item">
-          <div class="msg-title">Hash：</div>
+          <div class="msg-title">Tx hash：</div>
           <div class="msg-info">{{activeEnvironment.opt.contractInfo.hash}}</div>
         </div>
       </div>
@@ -42,7 +50,7 @@
               :autosize="true"
               resize="none"
               placeholder="The input argument of the main function"
-              :value="activeEnvironment.opt.invokData.mainData"
+              :value="activeFileMainData"
               @input="changeInvokMianData">
             </el-input>
             <div class="main-num-send">
@@ -64,7 +72,7 @@
               :autosize="true"
               resize="none"
               placeholder="The input argument of the query function"
-              :value="activeEnvironment.opt.invokData.queryData"
+              :value="activeFileQueryData"
               @input="changeInvokQueryData">
             </el-input>
             <div class="invok-handle">
@@ -80,6 +88,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import moment from 'moment'
+import codeConfig from '../../axios/codeConfig.js'
 import { debugForMain, debugForQuery, getBalance, moToBu, buToMo } from '../../api/index.js'
 // import codeBeautify from '../../tools/codeBeautify.js'
 export default {
@@ -95,6 +104,10 @@ export default {
     pubIng: {
       type: Boolean,
       default: false
+    },
+    refreshAccountBalanceIng: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {},
@@ -103,27 +116,71 @@ export default {
     ...mapGetters([
       'activeEnvironment',
       'environment',
-      'environmentType'
+      'environmentType',
+      'activeFile',
+      'activeFileInitData',
+      'activeFileMainData',
+      'activeFileQueryData'
     ])
   },
   methods: {
-    switchInvokDataType (tab, event) {
-      // console.log(tab.name)
+    switchInvokDataType () {},
+    refreshAccountBalance () {
+      this.$emit('refreshAccountBalance', {
+        type: this.environmentType,
+        address: this.activeEnvironment.opt.editor.address
+      })
     },
     changeInvokQueryData (value) {
-      var environment = JSON.parse(JSON.stringify(this.environment))
-      environment[this.environmentType].opt.invokData.queryData = value
-      this.$store.dispatch('setEnvironment', environment).then((res) => {})
+      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      for (var i = 0; i < editorState.files.length; i++) {
+        if (editorState.files[i].path === this.activeFile) {
+          editorState.files[i].invokeData.query = value
+        }
+      }
+      for (var x = 0; x < editorState.tree.length; x++) {
+        for (var y = 0; y < editorState.tree[x].children.length; y++) {
+          if (editorState.tree[x].children[y].path === this.activeFile) {
+            editorState.tree[x].children[y].invokeData.query = value
+            break
+          }
+        }
+      }
+      this.$store.dispatch('setEditorState', editorState).then((res) => {})
     },
     changeInvokMianData (value) {
-      var environment = JSON.parse(JSON.stringify(this.environment))
-      environment[this.environmentType].opt.invokData.mainData = value
-      this.$store.dispatch('setEnvironment', environment).then((res) => {})
+      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      for (var i = 0; i < editorState.files.length; i++) {
+        if (editorState.files[i].path === this.activeFile) {
+          editorState.files[i].invokeData.main = value
+        }
+      }
+      for (var x = 0; x < editorState.tree.length; x++) {
+        for (var y = 0; y < editorState.tree[x].children.length; y++) {
+          if (editorState.tree[x].children[y].path === this.activeFile) {
+            editorState.tree[x].children[y].invokeData.main = value
+            break
+          }
+        }
+      }
+      this.$store.dispatch('setEditorState', editorState).then((res) => {})
     },
     changeIssueData (value) {
-      var environment = JSON.parse(JSON.stringify(this.environment))
-      environment[this.environmentType].opt.issueInitData = value
-      this.$store.dispatch('setEnvironment', environment).then((res) => {})
+      var editorState = JSON.parse(window.localStorage.getItem('editorState'))
+      for (var i = 0; i < editorState.files.length; i++) {
+        if (editorState.files[i].path === this.activeFile) {
+          editorState.files[i].invokeData.init = value
+        }
+      }
+      for (var x = 0; x < editorState.tree.length; x++) {
+        for (var y = 0; y < editorState.tree[x].children.length; y++) {
+          if (editorState.tree[x].children[y].path === this.activeFile) {
+            editorState.tree[x].children[y].invokeData.init = value
+            break
+          }
+        }
+      }
+      this.$store.dispatch('setEditorState', editorState).then((res) => {})
     },
     changeInvokSendBu (value) {
       var environment = JSON.parse(JSON.stringify(this.environment))
@@ -138,7 +195,7 @@ export default {
         return false
       }
       if (this.environmentType === 'sandbox') {
-        let inputData = this.activeEnvironment.opt.invokData.mainData
+        let inputData = this.activeFileMainData
         let acc = JSON.parse(window.localStorage.getItem('sanboxAccount'))
         let params = {
           type: this.environmentType,
@@ -153,29 +210,13 @@ export default {
         debugForMain(params).then((res) => {
           // console.log(res)
           this.invokIng = false
-          if (res.errorCode === 0) {
+          if (res.errorCode === codeConfig.SUCCESS_CODE) {
             let environment = JSON.parse(JSON.stringify(this.environment))
-            environment.sandbox.console.data.push({
-              status: 'success',
-              result: this.formatResult(res.result),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
-            this.$store.dispatch('setEnvironment', environment).then((res) => {})
-          } else if (res.errorCode === 151) {
-            let environment = JSON.parse(JSON.stringify(this.environment))
-            environment.sandbox.console.data.push({
-              status: 'failed',
-              result: this.formatResult(res.errorDesc),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
+            environment.sandbox.console.data.push(this.formatMainConsoleInfo('finished', res.result))
             this.$store.dispatch('setEnvironment', environment).then((res) => {})
           } else {
             let environment = JSON.parse(JSON.stringify(this.environment))
-            environment.sandbox.console.data.push({
-              status: 'failed',
-              result: this.formatResult(res.errorDesc),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
+            environment.sandbox.console.data.push(this.formatMainConsoleInfo('failed', res.errorDesc))
             this.$store.dispatch('setEnvironment', environment).then((res) => {})
           }
           setTimeout(() => {
@@ -184,7 +225,7 @@ export default {
               address: this.environment.sandbox.opt.editor.address
             }).then((banlaceRes) => {
               // console.log(banlaceRes)
-              if (banlaceRes.errorCode === 0) {
+              if (banlaceRes.errorCode === codeConfig.SUCCESS_CODE) {
                 let environment = JSON.parse(JSON.stringify(this.environment))
                 environment.sandbox.opt.editor.balance = moToBu(banlaceRes.result.balance)
                 this.$store.dispatch('setEnvironment', environment).then((res) => {})
@@ -199,7 +240,7 @@ export default {
         return false
       }
       if (this.environmentType === 'sandbox') {
-        let inputData = this.activeEnvironment.opt.invokData.queryData
+        let inputData = this.activeFileQueryData
         this.invokIng = true
         debugForQuery({
           type: this.environmentType,
@@ -208,21 +249,13 @@ export default {
         }).then((res) => {
           this.invokIng = false
           // console.log(res)
-          if (res.errorCode === 0) {
+          if (res.errorCode === codeConfig.SUCCESS_CODE) {
             let environment = JSON.parse(JSON.stringify(this.environment))
-            environment.sandbox.console.data.push({
-              status: 'success',
-              result: this.formatResult(res.result),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
+            environment.sandbox.console.data.push(this.formatQueryConsoleInfo(res.result))
             this.$store.dispatch('setEnvironment', environment).then((res) => {})
           } else {
             let environment = JSON.parse(JSON.stringify(this.environment))
-            environment.sandbox.console.data.push({
-              status: 'failed',
-              result: this.formatResult(res.errorDesc),
-              time: moment().format('YYYY-MM-DD HH:mm:ss')
-            })
+            environment.sandbox.console.data.push(this.formatQueryConsoleInfo(res.errorDesc))
             this.$store.dispatch('setEnvironment', environment).then((res) => {})
           }
         })
@@ -247,6 +280,93 @@ export default {
         return result
       }
     },
+    formatQueryConsoleInfo (res) {
+      var result = {
+        time: moment().format('YYYY-MM-DD HH:mm:ss'),
+        action: 'Query',
+        status: '',
+        raw: this.formatResult(res),
+        printInfoList: [],
+        showRaw: false
+      }
+      if (res.hasOwnProperty('query_rets')) {
+        result.status = 'finished'
+        if (res.query_rets.constructor === Array) {
+          for (let i = 0; i < res.query_rets.length; i++) {
+            if (res.query_rets[i].hasOwnProperty('result')) { // query success
+              result.printInfoList.push({
+                title: 'Result',
+                dec: res.query_rets[i].result.value
+              })
+            } else if (res.query_rets[i].hasOwnProperty('error')) { // query failed
+              result.printInfoList.push({
+                title: 'Exception',
+                dec: res.query_rets[i].error.data.exception
+              })
+            }
+          }
+        }
+      } else {
+        result.status = 'failed'
+        result.printInfoList.push({
+          title: 'Error',
+          dec: res
+        })
+      }
+      return result
+    },
+    formatMainConsoleInfo (status, res) {
+      var result = {
+        time: moment().format('YYYY-MM-DD HH:mm:ss'),
+        action: 'Invoke',
+        status: status,
+        raw: this.formatResult(res),
+        printInfoList: [],
+        showRaw: false
+      }
+      if (status === 'finished') { // Invoke contract for success
+        for (let i = 0; i < res.transactions.length; i++) {
+          result.printInfoList.push({
+            title: 'Hash',
+            dec: res.transactions[i].hash
+          })
+          result.printInfoList.push({
+            title: 'Transaction result',
+            dec: res.transactions[i].error_code === 0 || res.transactions[i].error_code === '0' ? 'success' : res.transactions[i].error_desc
+          })
+        }
+      } else if (status === 'failed') { // Invoke contract for failed
+        try {
+          let basement = JSON.parse(res)
+          if (basement.constructor === Array) {
+            for (let i = 0; i < basement.length; i++) {
+              let rowStr = basement[i].line ? (' at row ' + basement[i].line) : ''
+              let colStr = basement[i].column ? (' and column ' + basement[i].column) : ''
+              result.printInfoList.push({
+                title: 'Error',
+                dec: basement[i].message + rowStr + colStr
+              })
+            }
+          } else if (basement.hasOwnProperty('exception')) {
+            result.printInfoList.push({
+              title: 'Exception',
+              dec: basement.exception
+            })
+          } else {
+            result.printInfoList.push({
+              title: 'Error',
+              dec: res
+            })
+          }
+        } catch (e) {
+          result.printInfoList.push({
+            title: 'Error',
+            dec: res
+          })
+        }
+      }
+      return result
+    },
     closeResult () {
       this.$store.commit('SET_ENVIRONMENT_ISSUERESULT', {type: this.environmentType, value: ''})
     }
@@ -255,6 +375,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@keyframes rotate{
+  0%{
+    transform: rotate(0deg);
+  }
+  50%{
+    transform:rotate(180deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+}
 .opt-content{
   flex-shrink: 0;
   width: 250px;
@@ -275,8 +406,23 @@ export default {
   }
 }
 .opt-box .opt-box-title{font-size: 18px;color: #fff;padding-bottom: 15px;font-weight: normal;}
-.opt-box .opt-box-cont p{font-size: 14px;color: #999; word-wrap:break-word;padding-bottom: 10px;}
-.opt-box .opt-box-cont .opt-box-btn{margin-top: 10px;}
+.opt-box .opt-box-cont p{
+  font-size: 14px;
+  color: #999;
+  word-wrap:break-word;
+  padding-bottom: 10px;
+  line-height: 20px;
+  & .el-icon-refresh{
+    font-size: 18px;
+    cursor: pointer;
+    &.refresh-ing{
+      animation: rotate 1.5s linear infinite;
+    }
+  }
+}
+.opt-box .opt-box-cont .opt-box-btn{
+  margin-top: 10px;
+}
 .issue-contract{
   & .opt-box-btn{
     min-width: 100px;
@@ -289,7 +435,7 @@ export default {
       position: relative;
       padding-right: 25px;
       padding-left: 10px;
-      height: 20px;
+      min-height: 20px;
       line-height: 20px;
       font-size: 12px;
       color: #fff;

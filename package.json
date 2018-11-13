@@ -11,12 +11,15 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit test/e2e/specs",
+    "build:dev": "node build/build.js",
+    "build:test": "node build/build.js",
     "build": "node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
     "bumo-sdk": "^2.1.0",
+    "contract-editor-sdk": "git+https://github.com/martinlee159/contract-editor-sdk.git",
     "chai": "^4.1.2",
     "co-wrap-all": "^1.0.0",
     "element-ui": "^2.4.2",
