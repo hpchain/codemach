@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100vh">
     <Header @switchEnvironment="switchEnvironment"></Header>
-    <div class="main-content">
+    <div class="main-content" :class="showWebkitWarn ? 'height-show-warn' : ''">
       <FileTree></FileTree>
       <Edit></Edit>
       <Opt :pubIng="pubIng" @publish="publish" @refreshAccountBalance="refreshAccountBalance" :refreshAccountBalanceIng="refreshAccountBalanceIng"></Opt>
@@ -17,7 +17,7 @@ import Edit from './Edit'
 import Opt from './Opt'
 import codeConfig from '../../axios/codeConfig.js'
 import { mapGetters } from 'vuex'
-import { createAccount, getBalance, recharge, createContract, moToBu } from '../../api/index.js'
+import { createAccount, getBalance, recharge, createContract, moToBu } from '../../api'
 export default {
   name: 'index',
   components: {Opt, Edit, FileTree, Header},
@@ -34,7 +34,8 @@ export default {
       'environment',
       'editorState',
       'activeContent',
-      'activeFileInitData'
+      'activeFileInitData',
+      'showWebkitWarn'
     ])
   },
   created () {
@@ -241,5 +242,12 @@ export default {
 </script>
 
 <style scoped>
-  .main-content{display: flex;flex-wrap: nowrap;height: calc(100vh - 60px);}
+  .main-content{
+    display: flex;
+    flex-wrap: nowrap;
+    height: calc(100vh - 60px);
+  }
+  .main-content.height-show-warn{
+    height: calc(100vh - 100px);
+  }
 </style>

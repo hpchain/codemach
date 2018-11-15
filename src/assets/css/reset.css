@@ -49,3 +49,11 @@ div::-webkit-scrollbar-track{
   right: 7px !important;
   bottom: 7px !important;
 }
+.ace_editor.ace_autocomplete .ace_scroller{
+  right: 11px !important;
+  bottom: 0px !important;
+}
+.ace_editor.ace_autocomplete div::-webkit-scrollbar-track{
+  background-color: #fff;
+}
+

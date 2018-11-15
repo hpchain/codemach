@@ -1,5 +1,6 @@
 <template>
   <div class="header">
+    <wibkit-warn></wibkit-warn>
     <div class="header-cont">
       <img class="header-logo" src="../../assets/CME-logo-01.png" />
       <el-menu v-if="0" class="ops-left"  background-color="#373955" text-color="#fff" active-text-color="#545c64" mode="horizontal">
@@ -39,8 +40,10 @@
 </template>
 
 <script>
+import wibkitWarn from '@/components/webkitWarn.vue'
 export default {
   name: 'Header',
+  components: { wibkitWarn },
   data () {
     return {}
   },
@@ -56,7 +59,7 @@ export default {
 </script>
 
 <style scoped>
-  .header{background: #373955;height: 60px;}
+  .header{background: #373955;min-height: 60px;}
   .header .header-cont{background: #373955;overflow: auto;}
   .header .header-logo{
     height: 35px;

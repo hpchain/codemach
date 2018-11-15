@@ -48,6 +48,7 @@ const getters = {
       }
     }
     return result
-  }
+  },
+  showWebkitWarn: state => state.base.showWebkitWarn
 }
 export default getters

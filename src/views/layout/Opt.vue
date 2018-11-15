@@ -393,7 +393,7 @@ export default {
   margin-top: 3px;
   padding: 0px 20px;
   overflow-y: scroll;
-  height: calc(100vh - 63px);
+  height: 100%;
   &::-webkit-scrollbar-track{
     background-color: #373955;
   }

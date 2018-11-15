@@ -72,6 +72,9 @@ export default {
   },
   methods: {
     showMenu (index, ins) {
+      if (index === 0) {
+        return
+      }
       this.activeMenu = index.toString() + ins.toString() // tranfer index to child component
       event.preventDefault()
       var x = event.clientX
