@@ -58,7 +58,6 @@
               <el-input
                 size="mini"
                 placeholder="Please enter the amount of BU"
-                type="number"
                 @input="changeInvokSendBu"
                 :value='activeEnvironment.opt.invokData.sendBu'></el-input>
             </div>
@@ -204,7 +203,13 @@ export default {
           contractAddress: this.activeEnvironment.opt.contractInfo.address
         }
         if (this.activeEnvironment.opt.invokData.sendBu) {
-          params.buAmount = buToMo(this.activeEnvironment.opt.invokData.sendBu)
+          var reg = /^(([1-9]\d*)+|0)(\.\d{1,8})?$/
+          if (reg.test(this.activeEnvironment.opt.invokData.sendBu)) {
+            params.buAmount = buToMo(this.activeEnvironment.opt.invokData.sendBu)
+          } else {
+            this.$message.error('Please input a positive number with a precision limited to 8 decimal digits')
+            return false
+          }
         }
         this.invokIng = true
         debugForMain(params).then((res) => {
