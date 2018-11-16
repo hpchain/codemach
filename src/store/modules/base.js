@@ -1,12 +1,13 @@
 const base = {
   state: {
-    pathName: ''
+    showWebkitWarn: false
   },
   mutations: {
-    setPathName: (state, data) => {
-      state.pathName = data
+    SET_WEBKITWARN_STATE: (state, data) => {
+      state.showWebkitWarn = data
     }
-  }
+  },
+  actions: {}
 }
 
 export default base

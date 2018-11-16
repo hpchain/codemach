@@ -11,8 +11,8 @@
 .edit-content .el-tabs--card>.el-tabs__header .el-tabs__item.is-active{
   border-left: none;border-right: none;border-bottom: 1px solid #00D080;}
 .edit-content .el-tabs--card>.el-tabs__header{border-bottom: none;background: #373955;}
-.edit-content .el-tabs--card>.el-tabs__header .el-tabs__item{border:none;position: relative}
-.edit-content .el-tabs--card>.el-tabs__header .el-tabs__item:last-child:after{display:none;}
+.edit-content .el-tabs--card>.el-tabs__header .el-tabs__item{border:none;position: relative;outline: none;}
+.edit-content .el-tabs--card>.el-tabs__header .el-tabs__item:last-child:after{}
 .edit-content .el-tabs--card>.el-tabs__header .el-tabs__item:after{
   display: block;
   content: "";

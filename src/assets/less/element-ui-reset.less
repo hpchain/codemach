@@ -22,3 +22,165 @@
     }
   }
 }
+/*color reset*/
+.el-form-item.is-error .el-input__inner{
+    border-color:#dcdfe6;
+}
+.pub-data-item.el-form-item.is-error .el-input__inner{
+    border-color:#f56c6c;
+}
+.data-item.el-form-item.is-error .el-input__inner{
+    border-color:#f56c6c;
+}
+.el-form-item.is-success .el-input__inner{
+    border-color: #dcdfe6;
+}
+.el-input__inner:focus{
+    border-color: #00d080;
+}
+.el-form-item.is-success .el-input__inner:focus, .el-form-item.is-success .el-textarea__inner:focus{
+    border-color: #00d080;
+}
+.el-form-item.is-error .el-input__inner:focus{
+    border-color: #00d080;
+}
+.el-checkbox__input.is-checked+.el-checkbox__label{
+   color: #666; 
+}
+.el-checkbox__input.is-checked .el-checkbox__inner{
+   background-color:#00d080;
+   border-color: #00d080; 
+}
+.el-checkbox__inner:hover{
+    border-color: #00d080;
+}
+.el-checkbox__input.is-focus .el-checkbox__inner{
+    border-color: #00d080;
+}
+
+/* carousel in index */
+.el-carousel__indicators {
+    display: none;
+}
+/* textarea */
+.el-textarea__inner{
+  font-family: "microsoft yahei", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.el-textarea__inner:focus{
+    border-color: #00d080;
+}
+/*弹出层样式重置*/
+.el-message-box__headerbtn:hover .el-message-box__close{
+  color: #00D080;
+}
+.el-button{
+  &:hover{
+    color: #00D080;
+    background-color: rgba(0, 208, 128, 0.1);
+    border-color: rgba(0, 208, 128, 0.6);
+  }
+}
+/*按钮样式重置*/
+.el-button--primary{
+  background-color: #00D080;
+  border-color: #00D080;
+  &:hover{
+    color: #fff;
+    background-color: #00D080;
+    border-color: #00D080;
+  }
+}
+.el-button--primary:focus{
+  background-color: #00D080;
+  border-color: #00D080;
+}
+/*调用合约部分样式重置*/
+.invok-cont{
+  & .el-tabs__nav-wrap::after{
+    display: none;
+  }
+  & .el-tabs__active-bar{
+    display: none;
+  }
+  & .el-tabs__header{
+    margin-bottom: 0;
+  }
+  & .el-tabs__item{
+    color: #999;
+    &:hover{
+      color: #00D080;
+    }
+  }
+  & .el-tabs__item.is-active{
+    color: #00D080;
+  }
+  & .el-textarea__inner{
+    background-color: #2C2D44;
+    border-color: #2C2D44;
+    height: 150px !important;
+    min-height: 150px !important;
+    color: #999;
+    &::-webkit-scrollbar{
+      display: none;
+    }
+    &::-webkit-input-placeholder{
+      color: #606266;
+    }
+  }
+  & .main-num-send{
+    margin-top: 10px;
+    &>p{
+      color: #999;
+      font-size: 14px;
+      line-height: 24px;
+      margin-bottom: 6px;
+    }
+    & .el-input{
+      margin-bottom: 5px;
+      & .el-input__inner{
+        background-color: #2C2D44;
+        border-color: #2C2D44;
+        color: #999;
+        &::-webkit-input-placeholder{
+          color: #606266;
+        }
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button{
+          -webkit-appearance: none !important;
+          margin: 0; 
+        }    
+      }
+    }
+  }
+}
+.issue-contract{
+  & .el-textarea__inner{
+    background-color: #2C2D44;
+    border-color: #2C2D44;
+    height: 150px !important;
+    min-height: 150px !important;
+    color: #999;
+    &::-webkit-scrollbar{
+      display: none;
+    }
+    &::-webkit-input-placeholder{
+      color: #606266;
+    }
+  }
+}
+.console-list{
+  & .item-dec{
+    & pre{
+      word-break: break-all;
+      & code.json{
+        word-break: break-all;
+        color: #999;
+        & anonymous{
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
