@@ -2,7 +2,7 @@
   "name": "codemach",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "胡楠 <137035119@qq.com>",
+  "author": "wenhai<huangwenhai@bubi.cn>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -19,7 +19,7 @@
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
     "bumo-sdk": "^2.1.0",
-    "contract-editor-sdk": "git+https://github.com/martinlee159/contract-editor-sdk.git",
+    "contract-editor-sdk": "git+https://github.com/bupriv/contract-editor-sdk.git#release/1.0.0",
     "chai": "^4.1.2",
     "co-wrap-all": "^1.0.0",
     "element-ui": "^2.4.2",
