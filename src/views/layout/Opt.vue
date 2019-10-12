@@ -5,7 +5,7 @@
         <h3 class="opt-box-title">Account</h3>
         <div class="opt-box-cont">
           <p>{{activeEnvironment.opt.editor.address}}</p>
-          <p>{{activeEnvironment.opt.editor.balance}} BU
+          <p>{{activeEnvironment.opt.editor.balance}} HP
             <i @click="refreshAccountBalance" :class="refreshAccountBalanceIng ? 'refresh-ing' : ''" class="fr el-icon-refresh"></i>
           </p>
         </div>
@@ -54,10 +54,10 @@
               @input="changeInvokMianData">
             </el-input>
             <div class="main-num-send">
-              <p>Amount of BU to be sent to the contract address</p>
+              <p>Amount of HP to be sent to the contract address</p>
               <el-input
                 size="mini"
-                placeholder="Please enter the amount of BU"
+                placeholder="Please enter the amount of HP"
                 @input="changeInvokSendBu"
                 :value='activeEnvironment.opt.invokData.sendBu'></el-input>
             </div>

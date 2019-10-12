@@ -136,7 +136,7 @@ export default {
           } else if (res.errorCode === codeConfig.NOT_ENOUGH_BANLANCE) {
             this.$message.error({
               type: 'error',
-              message: 'The BU required for the deploy is insufficient, the system will recharge BU automatically for you, you can refresh the balance to checking  status',
+              message: 'The HP required for the deploy is insufficient, the system will recharge HP automatically for you, you can refresh the balance to checking  status',
               onClose: () => {}
             })
           } else {
